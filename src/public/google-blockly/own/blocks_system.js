@@ -351,7 +351,6 @@ Blockly.Blocks['update'] = {
         this.appendDummyInput('OID')
             .appendField(new Blockly.FieldOID('Object ID'), 'OID');
 
-
         this.appendValueInput('VALUE')
             .setCheck(null)
             .appendField(Blockly.Translate('update_with'));
@@ -633,6 +632,65 @@ Blockly.JavaScript['create'] = function(block) {
     }
 
     return 'createState("' + name + '"' + paraV + paraC + ', async function () {\n' + statement + '});\n';
+};
+
+// --- create state simple --------------------------------------------------
+Blockly.System.blocks['create_state_simple'] =
+    '<block type="create_state_simple">'
+    + '     <value name="OID">'
+    + '     </value>'
+    + '     <value name="DEFAULT_VALUE">'
+    + '         <shadow type="text">'
+    + '             <field name="DEFAULT_VALUE"></field>'
+    + '         </shadow>'
+    + '     </value>'
+    + '     <value name="DATATYPE">'
+    + '     </value>'
+    + '</block>';
+
+Blockly.Blocks['create_state_simple'] = {
+    init: function() {
+        this.appendDummyInput()
+            .appendField(Blockly.Translate('create'));
+
+        this.appendDummyInput('OID')
+            .appendField(Blockly.Translate('create_oid'))
+            .appendField(new Blockly.FieldTextInput(Blockly.Translate('create_jsState')), 'OID');
+
+        this.appendValueInput('DEFAULT_VALUE')
+            .setCheck(null)
+            .appendField(Blockly.Translate('create_default'));
+
+        this.appendDummyInput('DATATYPE')
+            .appendField(Blockly.Translate('create_datatype'))
+            .appendField(new Blockly.FieldDropdown([
+                [Blockly.Translate('datatype_boolean'), "boolean"],
+                [Blockly.Translate('datatype_string'), "string"],
+                [Blockly.Translate('datatype_number'), "number"],
+                [Blockly.Translate('datatype_array'), "array"],
+                [Blockly.Translate('datatype_object'), "object"],
+                [Blockly.Translate('datatype_mixed'), "mixed"],
+            ]), 'DATATYPE');
+
+        this.setPreviousStatement(true, null);
+        this.setNextStatement(true, null);
+
+        this.setInputsInline(false);
+        this.setColour(Blockly.System.HUE);
+        this.setTooltip(Blockly.Translate('create_tooltip'));
+        this.setHelpUrl(getHelp('create_help'));
+    }
+};
+
+Blockly.JavaScript['create_state_simple'] = function(block) {
+    var oid = block.getFieldValue('OID');
+    var defaultValue = Blockly.JavaScript.valueToCode(block, 'DEFAULT_VALUE', Blockly.JavaScript.ORDER_ATOMIC);
+    var common = {
+        type: block.getFieldValue('DATATYPE'),
+        def: defaultValue
+    };
+
+    return 'createState("' + oid + '", ' + JSON.stringify(common) + ');\n';
 };
 
 // --- get value --------------------------------------------------
